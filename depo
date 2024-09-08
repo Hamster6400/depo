@@ -1,0 +1,25 @@
+import random
+import asyncio
+import discord
+
+async def dogru_mu(bot, channel):
+    cevap = random.randint(1, 10)
+
+    # Kullanıcıya oyun başladığını belirten bir mesaj gönderiyoruz
+    await channel.send("Tahmin oyunu başladı! 🎮 1 ile 10 arasında bir sayı tahmin et ve 5 saniye içinde yanıtla.")
+
+    def check(m):
+        return m.channel == channel and m.content.isdigit()
+
+    try:
+        # Kullanıcıdan tahmin bekliyoruz (5 saniye süre tanınıyor)
+        tahmin = await bot.wait_for('message', check=check, timeout=5.0)
+    except asyncio.TimeoutError:
+        # Zaman aşımı durumunda mesaj gönderiyoruz
+        await channel.send(f'Üzgünüm, çok uzun sürdü. Cevap {cevap} idi.')
+        return
+
+    if int(tahmin.content) == cevap:
+        await channel.send('Doğru bildin! 🎉')
+    else:
+        await channel.send(f'Maalesef. Doğru cevap {cevap} idi. 😔')
